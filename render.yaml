@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: mentorixai-streamlit
+    env: python
+    rootDir: ai-study-planner-main
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port=$PORT --server.address=0.0.0.0
+    plan: free
+    disk:
+      name: mentorixai-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_EMAIL_API_URL
+        value: https://replace-with-your-node-backend.onrender.com
+      - key: STUDY_PLANNER_DB_PATH
+        value: /var/data/study_planner.db
+      - key: UPLOADS_DIR
+        value: /var/data/uploads
+      - key: REPORTS_DIR
+        value: /var/data/reports
+
+  - type: web
+    name: mentorixai-node-backend
+    env: node
+    rootDir: ai-study-planner-main/node_backend
+    buildCommand: npm install
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASSWORD
+        sync: false
+      - key: PORT
+        value: 5000
